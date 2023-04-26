@@ -1,2 +1,28 @@
 @import './common';
-@import './example';
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  background-color: palevioletred;
+}
+.input {
+  width: 250px;
+  height: 35px;
+  padding-left: 10px;
+  border: none;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  outline: none;
+}
+.submit {
+  border: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.submit span {
+  display: none;
+}
+.submit::after {
+  content: '🔍';
+}
