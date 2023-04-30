@@ -41,12 +41,12 @@ async function onLoad() {
 
       gallery.insertAdjacentHTML('beforeend', getImage(data));
       lightbox.refresh();
-      console.log(totalPages);
-      console.log('CurrentPage', currentPage);
-      if (currentPage === totalPages || PER_PAGE <= 40) {
-        Notify.failure(
-          "We're sorry, but you've reached the end of search results."
-        );
+    //   console.log(totalPages);
+    //   console.log('CurrentPage', currentPage);
+      if (currentPage === totalPages || PER_PAGE < 40) {
+        // Notify.failure(
+        //   "We're sorry, but you've reached the end of search results."
+        // );
         btnMore.hidden = true;
       }
       if (data.page === totalPages) {
