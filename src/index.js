@@ -9,8 +9,6 @@ const btnMore = document.querySelector('.load-more');
 
 let PER_PAGE = 40;
 let currentPage = 1;
-const totalPages = gallery.totalHits / PER_PAGE;
-
 if (!input.value) {
   btnMore.hidden = true;
 }
@@ -19,29 +17,47 @@ form.addEventListener('submit', evt => {
   evt.preventDefault();
   onSearch();
 });
-new SimpleLightbox('.gallery a');
+
+// const target = document.querySelector('.js-guard');
+// let options = {
+//   root: null,
+//   rootMargin: '300px',
+//   threshold: 1.0,
+// };
+
+// let observer = new IntersectionObserver(onScroll, options);
+
+// function onScroll(){}
 
 btnMore.addEventListener('click', onLoad);
+let lightbox = new SimpleLightbox('.gallery a');
 
-function onLoad() {
-  if (gallery.totalHits === totalPages * PER_PAGE) {
-    Notify.info("We're sorry, but you've reached the end of search results.");
-  } else {
-    currentPage += 1;
+async function onLoad() {
+  currentPage += 1;
 
-    fetchImg(currentPage)
-      .then(data => {
-        gallery.insertAdjacentHTML('beforeend', getImage(data));
+  const a = await fetchImg(currentPage)
+    .then(data => {
+      const totalPages = Math.round(data.totalHits / PER_PAGE);
 
-        if (data.page === totalPages) {
-          btnMore.hidden = true;
-        }
-      })
-      .catch(err => console.log(err));
-  }
+      gallery.insertAdjacentHTML('beforeend', getImage(data));
+      lightbox.refresh();
+      //   console.log(totalPages);
+      //   console.log('CurrentPage', currentPage);
+      if (currentPage === totalPages) {
+        Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+        btnMore.hidden = true;
+      }
+      if (data.page === totalPages) {
+        btnMore.hidden = true;
+      }
+    })
+    .catch(err => console.log(err));
+  return a;
 }
 
-function fetchImg(page = 1) {
+async function fetchImg(page = 1) {
   const BASE_URL = 'https://pixabay.com/api';
   const KEY = '35791933-9e16cedd0ba1b691c7138b55a';
   const Q = input.value;
@@ -49,7 +65,7 @@ function fetchImg(page = 1) {
   const ORIENTATION = 'horizontal';
   const SAFESEARCH = 'safesearch';
 
-  return fetch(
+  const url = await fetch(
     `${BASE_URL}/?key=${KEY}&q=${Q}&image_type=${IMAGE_TYPE}&orientation=${ORIENTATION}&safesearch=${SAFESEARCH}&page=${page}&per_page=${PER_PAGE}`
   ).then(response => {
     if (!response.ok) {
@@ -58,28 +74,36 @@ function fetchImg(page = 1) {
 
     return response.json();
   });
+  return url;
 }
 
-function onSearch() {
+async function onSearch() {
   const imagesName = input.value.trim();
 
-  if (input.value) {
-    fetchImg(imagesName)
-      .then(images => {
-        gallery.innerHTML = '';
-        gallery.insertAdjacentHTML('beforeend', getImage(images));
-      })
-      .catch(err => console.log(err));
+  const b = await fetchImg(imagesName)
+    .then(images => {
+      if (images.hits.length) {
+        Notify.info(`"Hooray! We found ${images.totalHits} images."`);
 
-    setTimeout(() => {
-      btnMore.hidden = false;
-    }, 500);
-  } else {
-    Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  }
+        setTimeout(() => {
+          btnMore.hidden = false;
+        }, 600);
+      } else {
+        // Notify.failure(
+        //   'Sorry, there are no images matching your search query. Please try again.'
+        // );
+
+        btnMore.hidden = true;
+      }
+
+      gallery.innerHTML = '';
+      gallery.insertAdjacentHTML('beforeend', getImage(images));
+      lightbox.refresh();
+    })
+    .catch(err => console.log(err));
+  return b;
 }
+
 function getImage(images) {
   return images.hits
     .map(

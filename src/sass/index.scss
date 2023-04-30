@@ -32,6 +32,7 @@ img {
   border: none;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+  cursor: pointer;
 }
 .submit span {
   display: none;
@@ -68,6 +69,7 @@ img {
 .gallery__link {
   display: block;
   text-decoration: none;
+  color: black;
   height: 100%;
 }
 
@@ -80,6 +82,27 @@ img {
 }
 
 .gallery__image {
+  width: 100%;
   object-fit: cover;
   transition: transform var(--animation-duration) var(--timing-function);
+}
+
+.load-more {
+  margin: 100px 50%;
+  width: 175px;
+  height: 40px;
+  font-size: 20px;
+  border-radius: 10px;
+  transform: translate(-50%, 0);
+  cursor: pointer;
+  border: none;
+  background-color: palevioletred;
+  color: white;
+}
+.load-more:hover {
+  background-color: white;
+  color: palevioletred;
+  border: 1px solid palevioletred;
+  transition: background-color var(--animation-duration) var(--timing-function);
+  transition: color var(--animation-duration) var(--timing-function);
 }
