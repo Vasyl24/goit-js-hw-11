@@ -1,10 +1,23 @@
 @import './common';
 
+:root {
+  --timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-duration: 250ms;
+}
+
+img {
+  display: block;
+}
 .search-form {
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: 10px 100%;
   background-color: palevioletred;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 999;
 }
 .input {
   width: 250px;
@@ -25,4 +38,48 @@
 }
 .submit::after {
   content: '🔍';
+}
+
+.gallery {
+  margin-top: 80px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+.photo-card {
+  width: 400px;
+  box-shadow: 0px 0px 15px rgb(186, 183, 183);
+}
+.info {
+  display: flex;
+  justify-content: space-around;
+}
+.info-item {
+  display: flex;
+  flex-basis: min-content;
+  font-weight: 500;
+  text-align: center;
+}
+.num-of-items {
+  font-weight: 400;
+}
+
+.gallery__link {
+  display: block;
+  text-decoration: none;
+  height: 100%;
+}
+
+.gallery__link:hover {
+  cursor: zoom-in;
+}
+
+.gallery__image:hover {
+  transform: scale(1.03);
+}
+
+.gallery__image {
+  object-fit: cover;
+  transition: transform var(--animation-duration) var(--timing-function);
 }
