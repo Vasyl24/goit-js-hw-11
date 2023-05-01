@@ -69,7 +69,7 @@ function onSearch() {
   const b = fetchImg(imagesName)
     .then(images => {
       // console.log(images);
-      if (images.hits.length < PER_PAGE) {
+      if (images.hits.length < PER_PAGE && images.hits.length > 0) {
         Notify.info(`"Hooray! We found ${images.totalHits} images."`);
 
         btnMore.hidden = true;
