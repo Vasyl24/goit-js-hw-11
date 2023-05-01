@@ -1,6 +1,7 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import axios from 'axios';
 
 const form = document.querySelector('#search-form');
 const input = document.querySelector('input[name="searchQuery"]');
@@ -9,6 +10,7 @@ const btnMore = document.querySelector('.load-more');
 
 let PER_PAGE = 40;
 let currentPage = 1;
+const Q = input.value;
 
 if (!input.value) {
   btnMore.hidden = true;
@@ -25,7 +27,7 @@ let lightbox = new SimpleLightbox('.gallery a');
 async function onLoad() {
   currentPage += 1;
 
-  const a = await fetchImg(currentPage)
+  const a = await fetchImg(Q, currentPage)
     .then(data => {
       const totalPages = Math.floor(data.totalHits / PER_PAGE);
 
@@ -46,24 +48,25 @@ async function onLoad() {
   return a;
 }
 
-async function fetchImg(Q) {
+async function fetchImg(Q, page = 1) {
   const BASE_URL = 'https://pixabay.com/api';
   const KEY = '35791933-9e16cedd0ba1b691c7138b55a';
-  Q = input.value;
   const IMAGE_TYPE = 'photo';
   const ORIENTATION = 'horizontal';
   const SAFESEARCH = 'safesearch';
 
-  const url = await fetch(
-    `${BASE_URL}/?key=${KEY}&q=${Q}&image_type=${IMAGE_TYPE}&orientation=${ORIENTATION}&safesearch=${SAFESEARCH}&page=${currentPage}&per_page=${PER_PAGE}`
-  ).then(response => {
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
+  const url = await axios
+    .get(
+      `${BASE_URL}/?key=${KEY}&q=${input.value}&image_type=${IMAGE_TYPE}&orientation=${ORIENTATION}&safesearch=${SAFESEARCH}&page=${page}&per_page=${PER_PAGE}`
+    )
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
 
-    return response.json();
-  });
-  return url;
+      return response.json();
+    });
+  return await url;
 }
 
 async function onSearch() {
@@ -71,6 +74,7 @@ async function onSearch() {
 
   const b = await fetchImg(imagesName)
     .then(images => {
+      console.log(images);
       if (images.hits.length < PER_PAGE) {
         Notify.info(`"Hooray! We found ${images.totalHits} images."`);
 
@@ -92,7 +96,9 @@ async function onSearch() {
       gallery.insertAdjacentHTML('beforeend', getImage(images));
       lightbox.refresh();
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log(err);
+    });
   return b;
 }
 
