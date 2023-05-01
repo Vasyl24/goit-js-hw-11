@@ -24,10 +24,10 @@ form.addEventListener('submit', evt => {
 btnMore.addEventListener('click', onLoad);
 let lightbox = new SimpleLightbox('.gallery a');
 
-async function onLoad() {
+function onLoad() {
   currentPage += 1;
 
-  const a = await fetchImg(Q, currentPage)
+  const a = fetchImg(Q, currentPage)
     .then(data => {
       const totalPages = Math.floor(data.totalHits / PER_PAGE);
 
@@ -54,27 +54,21 @@ async function fetchImg(Q, page = 1) {
   const IMAGE_TYPE = 'photo';
   const ORIENTATION = 'horizontal';
   const SAFESEARCH = 'safesearch';
-
-  const url = await axios
-    .get(
-      `${BASE_URL}/?key=${KEY}&q=${input.value}&image_type=${IMAGE_TYPE}&orientation=${ORIENTATION}&safesearch=${SAFESEARCH}&page=${page}&per_page=${PER_PAGE}`
-    )
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-
-      return response.json();
-    });
-  return await url;
+  const response = await axios.get(
+    `${BASE_URL}/?key=${KEY}&q=${input.value}&image_type=${IMAGE_TYPE}&orientation=${ORIENTATION}&safesearch=${SAFESEARCH}&page=${page}&per_page=${PER_PAGE}`
+  );
+  if (response.status !== 200) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+  return response.data;
 }
 
-async function onSearch() {
+function onSearch() {
   const imagesName = input.value.trim();
 
-  const b = await fetchImg(imagesName)
+  const b = fetchImg(imagesName)
     .then(images => {
-      console.log(images);
+      // console.log(images);
       if (images.hits.length < PER_PAGE) {
         Notify.info(`"Hooray! We found ${images.totalHits} images."`);
 
